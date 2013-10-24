@@ -31,8 +31,11 @@ mkdir -p "$os_dir"
 
 pacstrap -dcC "$work_dir"/pacman.conf "$os_dir" $PKGS
 
+kernel_version=$(pacman -r "$os_dir" -Q linux | cut -d' ' -f 2)-ARCH
+
 systemd-nspawn -D "$os_dir" \
-    mkinitcpio -c /etc/ostree-mkinitcpio.conf -g /boot/initramfs-linux.img
+    mkinitcpio -c /etc/ostree-mkinitcpio.conf -g /boot/initramfs-linux.img \
+        -k $kernel_version
 
 mkdir -p "$os_dir"/sysroot
 
