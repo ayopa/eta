@@ -13,14 +13,15 @@ die() {
     exit 1
 }
 
-(( EUID != 0 )) && die "This script must be run as root."
-
 . "$conf_dir"/eta.conf
 
-rm -rf "$work_dir"
-rm -rf "$out_dir"
+(( EUID != 0 )) && die "This script must be run as root."
 
-sudo -u $SUDO_USER git clean -fdx
+rm -rf "$work_dir"
+
+sudo -u $SUDO_USER bash -c \
+    "rm -f "$out_dir"/$OSNAME.img;
+     rm -rf "$out_dir"/repo"
 
 for module in $MODULES
 do

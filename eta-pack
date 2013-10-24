@@ -7,12 +7,14 @@ base_dir="$(pwd)"
 out_dir="$base_dir"/out
 conf_dir="$base_dir"/conf
 ostree_dir="$out_dir"/ostree
-image_path="$out_dir"/ostree.img
 
 . "$conf_dir"/eta.conf
 
+image_path="$out_dir"/$OSNAME.img
+
 rm -f "$image_path"
-truncate -s 5GB "$image_path"
+
+sudo -u $SUDO_USER truncate -s 5GB "$image_path"
 
 parted "$image_path" mklabel msdos
 parted "$image_path" mkpart primary ext4 0% 10%
