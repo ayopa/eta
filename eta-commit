@@ -50,7 +50,7 @@ mv "$boot_dir"/initramfs-*.img "$boot_dir"/initramfs-$checksum
 mv "$boot_dir"/vmlinuz-* "$boot_dir"/vmlinuz-$checksum
 
 if [ ! -d "$ostree_dir" ]; then
-    ostree --repo="$ostree_dir" init
+    ostree --repo="$ostree_dir" init --mode archive-z2
 fi
 
 ostree --repo="$ostree_dir" commit --tree=dir="$os_dir" --branch=master \
