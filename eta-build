@@ -20,6 +20,10 @@ die() {
 
 . "$conf_dir"/eta.conf
 
+mkdir -p "$work_dir"
+
+sudo -u $SUDO_USER mkdir -p "$repo_dir"
+
 if [ ! -d "$root_dir" ]; then
     mkarchroot -C "$conf_dir"/pacman.conf "$root_dir" base-devel git
 

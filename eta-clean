@@ -17,12 +17,12 @@ die() {
 
 . "$conf_dir"/eta.conf
 
+rm -rf "$work_dir"
+rm -rf "$out_dir"
+
 sudo -u $SUDO_USER git clean -fdx
 
 for module in $MODULES
 do
     sudo -u $SUDO_USER bash -c "cd source/$module; git clean -fdx"
 done
-
-rm -rf "$work_dir"
-rm -rf "$out_dir"

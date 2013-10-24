@@ -4,11 +4,11 @@ set -e
 set -x
 
 base_dir="$(pwd)"
+work_dir="$base_dir"/work
 os_dir="$work_dir"/os
 repo_dir="$base_dir"/out/repo
 conf_dir="$base_dir"/conf
 out_dir="$base_dir"/out
-work_dir="$base_dir"/work
 conf_dir="$base_dir"/conf
 ostree_dir="$out_dir"/ostree
 
@@ -26,20 +26,19 @@ cp -f "$conf_dir"/pacman.conf "$work_dir"
 echo -e "\n[$OSNAME]\nSigLevel = Never\nServer = file://$repo_dir" >> \
     "$work_dir"/pacman.conf
 
-if [ ! -d "$os_dir" ]; then
-    mkdir -p "$os_dir"/os
-    pacstrap -dcC "$work_dir"/pacman.conf "$work_dir"/os $PKGS
-else
-    systemd-nspawn -D "$os_dir" pacman -Suy --needed $PKGS
-fi
+rm -rf "$os_dir"
+mkdir -p "$os_dir"
+
+pacstrap -dcC "$work_dir"/pacman.conf "$os_dir" $PKGS
 
 systemd-nspawn -D "$os_dir" \
     mkinitcpio -c /etc/ostree-mkinitcpio.conf -g /boot/initramfs-linux.img
 
 mkdir -p "$os_dir"/sysroot
-rm -f initramfs-linux-fallback.img
 
 boot_dir="$os_dir"/boot
+
+rm -f "$boot_dir"/initramfs-linux-fallback.img
 
 checksum=$(cat "$boot_dir"/initramfs-* "$boot_dir"/vmlinuz-* | \
            sha256sum | cut -d' ' -f 1)

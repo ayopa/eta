@@ -7,11 +7,12 @@ url="https"
 license=('LGPL')
 depends=('systemd')
 makedepends=('git' 'gtk-doc')
-source=('eta-build' 'eta-commit' 'eta-clean')
-md5sums=('SKIP' 'SKIP' 'SKIP')
+source=('eta-build' 'eta-commit' 'eta-clean' 'eta-pack')
+md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 package() {
     install -D -m755 ${srcdir}/eta-build ${pkgdir}/usr/bin/eta-build
     install -D -m755 ${srcdir}/eta-commit ${pkgdir}/usr/bin/eta-commit
     install -D -m755 ${srcdir}/eta-clean ${pkgdir}/usr/bin/eta-clean
+    install -D -m755 ${srcdir}/eta-pack ${pkgdir}/usr/bin/eta-pack
 }
