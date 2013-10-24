@@ -1,0 +1,28 @@
+#!/usr/bin/bash
+
+set -e
+set -x
+
+base_dir="$(pwd)"
+out_dir="$base_dir"/out
+work_dir="$base_dir"/work
+conf_dir="$base_dir"/conf
+
+die() {
+    echo "$@"
+    exit 1
+}
+
+(( EUID != 0 )) && die "This script must be run as root."
+
+. "$conf_dir"/eta.conf
+
+sudo -u $SUDO_USER git clean -fdx
+
+for module in $MODULES
+do
+    sudo -u $SUDO_USER bash -c "cd source/$module; git clean -fdx"
+done
+
+rm -rf "$work_dir"
+rm -rf "$out_dir"
