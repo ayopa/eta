@@ -1,0 +1,62 @@
+#!/usr/bin/bash
+
+set -e
+set -x
+
+base_dir="$(pwd)"
+source_dir="$base_dir"/source
+build_dir="$base_dir"/build
+conf_dir="$base_dir"/conf
+work_dir="$base_dir"/work
+root_dir="$work_dir"/root
+repo_dir="$base_dir"/out/repo
+
+die() {
+    echo "$@"
+    exit 1
+}
+
+(( EUID != 0 )) && die "This script must be run as root."
+
+. "$conf_dir"/eta.conf
+
+if [ ! -d "$root_dir" ]; then
+    mkarchroot -C "$conf_dir"/pacman.conf "$root_dir" base-devel git
+
+    systemd-nspawn -D "$root_dir" bash -c \
+        "groupadd eta -g $SUDO_GID; \
+         useradd eta -u $SUDO_UID -g $SUDO_GID"
+else
+    systemd-nspawn -D "$root_dir" pacman -Suy --noconfirm
+fi
+
+rm -f "$repo_dir"/*
+
+for module in $MODULES
+do
+    copy_dir="$work_dir"/$module
+
+    if [ ! -d "$copy_dir" ]; then
+        rsync -aqWx --delete "$root_dir"/ "$copy_dir"
+    else
+        systemd-nspawn -D "$copy_dir" pacman -Suy --noconfirm
+    fi
+
+    if [ -f "$repo_dir"/$OSNAME.db.tar.gz ]; then
+        repo_url=file:///eta/repo
+        echo -e "\n[$OSNAME]\nSigLevel = Never\nServer = $repo_url" >> \
+            "$copy_dir"/etc/pacman.conf
+    fi
+
+    systemd-nspawn -D "$copy_dir" --bind="$base_dir":/eta \
+        bash -c "cd /eta/build/$module; \
+                 makepkg -soe --noconfirm --asroot"
+
+    systemd-nspawn -D "$copy_dir" -u $SUDO_UID \
+        --bind="$base_dir":/eta --bind="$repo_dir":/repo \
+        bash -c "cd /eta/build/$module;
+                 makepkg -ef; \
+                 pkg_name=\$(ls -t *.pkg.tar.xz | head -n 1); \
+                 cp -f \$pkg_name /repo;
+                 repo-add /repo/$OSNAME.db.tar.gz /repo/\$pkg_name"
+done
