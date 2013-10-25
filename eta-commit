@@ -69,7 +69,7 @@ ln -s sysroot/tmp "$os_dir"/tmp
 ln -s var/home "$os_dir"/home
 ln -s var/roothome "$os_dir"/root
 
-cat << EOF > /usr/lib/tmpfiles.d/ostree.conf
+cat << EOF > "$os_dir"/usr/lib/tmpfiles.d/ostree.conf
 d /var/log/journal 0755 root root -
 L /var/home - - - - ../sysroot/home
 d /var/roothome 0700 root root -
