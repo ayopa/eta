@@ -45,8 +45,6 @@ systemd-nspawn -D "$os_dir" \
     mkinitcpio -c /etc/ostree-mkinitcpio.conf -g /boot/initramfs-linux.img \
         -k $kernel_version
 
-mkdir -p "$os_dir"/sysroot
-
 boot_dir="$os_dir"/boot
 
 rm -f "$boot_dir"/initramfs-linux-fallback.img
@@ -60,6 +58,24 @@ mv "$boot_dir"/vmlinuz-* "$boot_dir"/vmlinuz-$checksum
 if [ ! -d "$ostree_dir" ]; then
     ostree --repo="$ostree_dir" init --mode archive-z2
 fi
+
+rm "$os_dir"/{bin,lib,lib64,sbin}
+rmdir "$os_dir"/{home,opt,root,mnt}
+rm -rf "$os_dir"/srv
+mv "$os_dir"/etc "$os_dir"/usr/etc
+mkdir "$os_dir"/sysroot
+
+ln -s sysroot/ostree "$os_dir"/ostree
+ln -s sysroot/tmp "$os_dir"/tmp
+ln -s var/home "$os_dir"/home
+ln -s var/roothome "$os_dir"/root
+
+cat << EOF > /usr/lib/tmpfiles.d/ostree.conf
+d /var/log/journal 0755 root root -
+L /var/home - - - - ../sysroot/home
+d /var/roothome 0700 root root -
+d /var/lib 0755 root root -
+EOF
 
 ostree --repo="$ostree_dir" commit --tree=dir="$os_dir" --branch=master \
     --subject "Update"
