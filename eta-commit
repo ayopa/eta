@@ -5,6 +5,7 @@ set -x
 
 base_dir="$(pwd)"
 work_dir="$base_dir"/work
+cache_dir="$work_dir"/cache
 os_dir="$work_dir"/os
 repo_dir="$base_dir"/out/repo
 conf_dir="$base_dir"/conf
@@ -23,8 +24,15 @@ die() {
 
 cp -f "$conf_dir"/pacman.conf "$work_dir"
 
+sed -i "s:^#CacheDir.*:CacheDir = $cache_dir:" "$work_dir"/pacman.conf
+
 echo -e "\n[$OSNAME]\nSigLevel = Never\nServer = file://$repo_dir" >> \
     "$work_dir"/pacman.conf
+
+for module in $MODULES:
+do
+    rm -f "$cache_dir"/$module-*
+done
 
 rm -rf "$os_dir"
 mkdir -p "$os_dir"
