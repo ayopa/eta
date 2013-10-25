@@ -59,7 +59,6 @@ if [ ! -d "$ostree_dir" ]; then
     ostree --repo="$ostree_dir" init --mode archive-z2
 fi
 
-rm "$os_dir"/{bin,lib,lib64,sbin}
 rmdir "$os_dir"/{home,opt,root,mnt}
 rm -rf "$os_dir"/srv
 mv "$os_dir"/etc "$os_dir"/usr/etc
