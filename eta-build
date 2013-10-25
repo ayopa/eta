@@ -20,6 +20,24 @@ die() {
 
 . "$conf_dir"/eta.conf
 
+ver_changed=false
+for module in $MODULES
+do
+    pushd "$build_dir"/$module
+
+    old_pkgver=$(bash -c ". ./PKGBUILD; echo \$pkgver")
+    new_pkgver=$(bash -c ". ./PKGBUILD; srcdir=src; pkgver")
+
+    if [ "$old_pkgver" != "$new_pkgver" ]; then
+        sed -i "s/^pkgver=[^ ]*/pkgver=$new_pkgver/" PKGBUILD
+        ver_changed=true
+    fi
+done
+
+if $ver_changed; then
+    die "The version of the packages changed, please commit."
+fi
+
 mkdir -p "$work_dir"
 
 sudo -u $SUDO_USER mkdir -p "$repo_dir"
