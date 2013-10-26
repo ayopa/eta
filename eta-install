@@ -25,12 +25,15 @@ while getopts 'hs:o:n:' arg; do
         h) usage ;;
         o) ostree_dir="$OPTARG" ;;
         n) osname="$OPTARG" ;;
-        *) sysroot="$OPTARG" ;;
     esac
 done
+shift $(($OPTIND - 1))
+
+sysroot=$1
 
 [ -z "$ostree_dir" ] && ostree=/ostree/repo
 [ -z "$osname" ] && die "Please specify the OS name."
+[ -z "$sysroot" ] && die "Please specify the sysroot."
 
 mkdir "$sysroot"/home
 
