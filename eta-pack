@@ -44,8 +44,6 @@ ln -s loader.0 "$sysroot"/boot/loader
 mkdir "$sysroot"/boot/syslinux
 ln -s ../loader/syslinux.cfg "$sysroot"/boot/syslinux/syslinux.cfg
 
-mkdir "$sysroot"/home
-
 ostree admin --sysroot="$sysroot" os-init $OSNAME
 
 ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
