@@ -55,4 +55,5 @@ losetup -d /dev/loop1
 dd bs=440 count=1 conv=notrunc \
     if=/usr/lib/syslinux/bios/mbr.bin of="$image_path"
 
+rm -f "$image_path".xz
 xz "$image_path"
