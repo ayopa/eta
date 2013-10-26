@@ -8,6 +8,13 @@ out_dir="$base_dir"/out
 conf_dir="$base_dir"/conf
 ostree_dir="$out_dir"/ostree
 
+die() {
+    echo "$@"
+    exit 1
+}
+
+(( EUID != 0 )) && die "This script must be run as root."
+
 . "$conf_dir"/eta.conf
 
 image_path="$out_dir"/$OSNAME.img
@@ -26,32 +33,18 @@ modprobe loop
 losetup /dev/loop0 "$image_path" -o 1048576 --sizelimit 499121664
 losetup /dev/loop1 "$image_path" -o 500170752 --sizelimit 4499439104
 
-sysroot=/mnt
-
 mkfs.ext4 /dev/loop0
 mkfs.ext4 /dev/loop1
 
 e2label /dev/loop1 $OSNAME
 
+sysroot=/mnt
+
 mount /dev/loop1 "$sysroot"
 mkdir -p "$sysroot"/boot
 mount /dev/loop0 "$sysroot"/boot
 
-mkdir "$sysroot"/boot/loader.0
-touch "$sysroot"/boot/loader.0/syslinux.cfg
-ln -s loader.0 "$sysroot"/boot/loader
-
-mkdir "$sysroot"/boot/syslinux
-ln -s ../loader/syslinux.cfg "$sysroot"/boot/syslinux/syslinux.cfg
-
-ostree admin --sysroot="$sysroot" os-init $OSNAME
-
-ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
-
-ostree admin --sysroot="$sysroot" \
-    deploy master --karg="root=LABEL=$OSNAME rw" --os=$OSNAME
-
-extlinux -i "$sysroot"/boot
+eta-install -n agora -o "$ostree_dir" "$sysroot"
 
 umount /mnt/boot
 umount /mnt
@@ -62,4 +55,4 @@ losetup -d /dev/loop1
 dd bs=440 count=1 conv=notrunc \
     if=/usr/lib/syslinux/bios/mbr.bin of="$image_path"
 
-xz "$image_path"
+#xz "$image_path"

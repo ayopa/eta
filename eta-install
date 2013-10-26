@@ -1,0 +1,49 @@
+#!/usr/bin/bash
+
+set -e
+set -x
+
+die() {
+    echo "$@"
+    exit 1
+}
+
+usage() {
+    echo "Usage: ${0##*/} [options] <sysroot>"
+    echo 'Flags:'
+    echo '-h         This help'
+    echo '-s <dir>   The installation root dir'
+    echo '-n <name>  The OS name'
+
+    exit 1
+}
+
+(( EUID != 0 )) && die "This script must be run as root."
+
+while getopts 'hs:o:n:' arg; do
+    case "$arg" in
+        h) usage ;;
+        o) ostree_dir="$OPTARG" ;;
+        n) osname="$OPTARG" ;;
+        *) sysroot="$OPTARG" ;;
+    esac
+done
+
+[ -z "$ostree_dir" ] && ostree=/ostree/repo
+[ -z "$osname" ] && die "Please specify the OS name."
+
+mkdir "$sysroot"/boot/loader.0
+touch "$sysroot"/boot/loader.0/syslinux.cfg
+ln -s loader.0 "$sysroot"/boot/loader
+
+mkdir "$sysroot"/boot/syslinux
+ln -s ../loader/syslinux.cfg "$sysroot"/boot/syslinux/syslinux.cfg
+
+ostree admin --sysroot="$sysroot" os-init $osname
+
+ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
+
+ostree admin --sysroot="$sysroot" \
+    deploy master --karg="root=LABEL=$osname rw" --os=$osname
+
+extlinux -i "$sysroot"/boot
