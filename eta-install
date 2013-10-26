@@ -9,10 +9,11 @@ die() {
 }
 
 usage() {
-    echo "Usage: ${0##*/} [options] <sysroot>"
+    echo "Usage: ${0##*/} [options] <target>"
+    echo "The <target> can be either a device or a directory."
     echo 'Flags:'
     echo '-h         This help'
-    echo '-s <dir>   The installation root dir'
+    echo '-s <dir>   The OSTree repository'
     echo '-n <name>  The OS name'
 
     exit 1
@@ -29,11 +30,31 @@ while getopts 'hs:o:n:' arg; do
 done
 shift $(($OPTIND - 1))
 
-sysroot=$1
+target=$1
 
 [ -z "$ostree_dir" ] && ostree=/ostree/repo
 [ -z "$osname" ] && die "Please specify the OS name."
-[ -z "$sysroot" ] && die "Please specify the sysroot."
+[ -z "$target" ] && die "Please specify the target."
+
+if [ $target == /dev/* ]; then
+    parted "$target" mklabel msdos
+    parted "$target" unit MB mkpart primary ext4 0 100
+    parted "$target" unit MB mkpart primary ext4 100 -0
+    parted "$target" set 1 boot on
+
+    mkfs.ext4 "$target"1
+    mkfs.ext4 "$target"2
+
+    sysroot=/mnt
+
+    mkdir -p "$sysroot"/mnt
+    mount "$target"2 "$sysroot"/mnt
+
+    mkdir -p "$sysroot"/mnt/boot
+    mount "$target"1 "$sysroot"/mnt/boot
+else
+    sysroot="$target"
+fi
 
 mkdir "$sysroot"/home
 
@@ -52,3 +73,8 @@ ostree admin --sysroot="$sysroot" \
     deploy master --karg="root=LABEL=$osname rw" --os=$osname
 
 extlinux -i "$sysroot"/boot
+
+if [ $target == /dev/* ]; then
+    umount "$target"1
+    umount "$target"2
+fi
