@@ -17,11 +17,8 @@ die() {
 
 (( EUID != 0 )) && die "This script must be run as root."
 
-rm -rf "$work_dir"
-
-sudo -u $SUDO_USER bash -c \
-    "rm -f "$out_dir"/$OSNAME.img.xz;
-     rm -rf "$out_dir"/repo"
+find "$work_dir" -mindepth 1 -maxdepth 1 ! -name cache -exec rm -rf {} \;
+find "$out_dir" -mindepth 1 -maxdepth 1 ! -name ostree -exec rm -rf {} \;
 
 for module in $MODULES
 do
