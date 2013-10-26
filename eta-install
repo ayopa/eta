@@ -36,7 +36,7 @@ target=$1
 [ -z "$osname" ] && die "Please specify the OS name."
 [ -z "$target" ] && die "Please specify the target."
 
-if [ $target == /dev/* ]; then
+if [[ $target == /dev* ]]; then
     parted "$target" mklabel msdos
     parted "$target" unit MB mkpart primary ext4 0 100
     parted "$target" unit MB mkpart primary ext4 100 -0
@@ -74,7 +74,7 @@ ostree admin --sysroot="$sysroot" \
 
 extlinux -i "$sysroot"/boot
 
-if [ $target == /dev/* ]; then
+if [[ $target == /dev* ]]; then
     umount "$target"1
     umount "$target"2
 fi
