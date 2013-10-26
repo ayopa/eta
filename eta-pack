@@ -44,6 +44,8 @@ ln -s loader.0 "$sysroot"/boot/loader
 mkdir "$sysroot"/boot/syslinux
 ln -s ../loader/syslinux.cfg "$sysroot"/boot/syslinux/syslinux.cfg
 
+mkdir "$sysroot"/home
+
 ostree admin --sysroot="$sysroot" os-init $OSNAME
 
 ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
@@ -62,4 +64,4 @@ losetup -d /dev/loop1
 dd bs=440 count=1 conv=notrunc \
     if=/usr/lib/syslinux/bios/mbr.bin of="$image_path"
 
-xz "$image_path"
+#xz "$image_path"
