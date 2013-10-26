@@ -32,6 +32,8 @@ done
 [ -z "$ostree_dir" ] && ostree=/ostree/repo
 [ -z "$osname" ] && die "Please specify the OS name."
 
+mkdir "$sysroot"/home
+
 mkdir "$sysroot"/boot/loader.0
 touch "$sysroot"/boot/loader.0/syslinux.cfg
 ln -s loader.0 "$sysroot"/boot/loader
