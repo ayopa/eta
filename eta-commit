@@ -43,7 +43,7 @@ kernel_version=$(pacman -r "$os_dir" -Q linux | cut -d' ' -f 2)-ARCH
 
 systemd-nspawn -D "$os_dir" \
     mkinitcpio -c /etc/ostree-mkinitcpio.conf -g /boot/initramfs-linux.img \
-        -k $kernel_version
+        -k $kernel_version -S autodetect
 
 boot_dir="$os_dir"/boot
 
