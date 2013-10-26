@@ -76,5 +76,7 @@ d /var/roothome 0700 root root -
 d /var/lib 0755 root root -
 EOF
 
+cp /usr/bin/eta-install "$os_dir"/usr/bin
+
 ostree --repo="$ostree_dir" commit --tree=dir="$os_dir" --branch=master \
     --subject "Update"
