@@ -51,7 +51,7 @@ ostree admin --sysroot="$sysroot" os-init $OSNAME
 ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
 
 ostree admin --sysroot="$sysroot" \
-    deploy master --karg=root=LABEL=$OSNAME --os=$OSNAME
+    deploy master --karg="root=LABEL=$OSNAME rw" --os=$OSNAME
 
 extlinux -i "$sysroot"/boot
 
@@ -64,4 +64,4 @@ losetup -d /dev/loop1
 dd bs=440 count=1 conv=notrunc \
     if=/usr/lib/syslinux/bios/mbr.bin of="$image_path"
 
-#xz "$image_path"
+xz "$image_path"
