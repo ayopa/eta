@@ -69,7 +69,7 @@ ln -s sysroot/tmp "$os_dir"/tmp
 ln -s var/home "$os_dir"/home
 ln -s var/roothome "$os_dir"/root
 
-cat << EOF > "$os_dir"/etc/fstab
+cat << EOF > "$os_dir"/usr/etc/fstab
 LABEL=agora-boot /boot ext4 rw,relatime,data=ordered 0 2
 LABEL=agora-root / ext4 rw,relatime,data=ordered 0 1
 EOF
