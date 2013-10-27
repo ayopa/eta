@@ -81,8 +81,6 @@ ostree admin --sysroot="$sysroot" \
 
 extlinux -i "$sysroot"/boot
 
-echo -e "[origin]\nrefspec=origin:master" > "$sysroot"/ostree/.origin
-
 if [[ $target == /dev* ]]; then
     umount "$target"1
     umount "$target"2
