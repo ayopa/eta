@@ -77,7 +77,7 @@ if [ ! -z "$origin_url" ]; then
 fi
 
 ostree admin --sysroot="$sysroot" \
-    deploy master --karg="root=LABEL=$osname-root rw" --os=$osname
+    deploy origin:master --karg="root=LABEL=$osname-root rw" --os=$osname
 
 extlinux -i "$sysroot"/boot
 
