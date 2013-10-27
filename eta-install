@@ -15,17 +15,19 @@ usage() {
     echo '-h         This help'
     echo '-s <dir>   The OSTree repository'
     echo '-n <name>  The OS name'
+    echo '-u <url>   The origin URL'
 
     exit 1
 }
 
 (( EUID != 0 )) && die "This script must be run as root."
 
-while getopts 'hs:o:n:' arg; do
+while getopts 'hs:o:n:u:' arg; do
     case "$arg" in
         h) usage ;;
         o) ostree_dir="$OPTARG" ;;
         n) osname="$OPTARG" ;;
+        u) origin_url="$OPTARG" ;;
     esac
 done
 shift $(($OPTIND - 1))
@@ -69,10 +71,16 @@ ostree admin --sysroot="$sysroot" os-init $osname
 
 ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
 
+if [ ! -z "$origin_url" ]; then
+    ostree --repo="$sysroot"/ostree/repo remote add origin "$origin_url"
+fi
+
 ostree admin --sysroot="$sysroot" \
     deploy master --karg="root=LABEL=$osname-root rw" --os=$osname
 
 extlinux -i "$sysroot"/boot
+
+echo -e "[origin]\nrefspec=origin:master" > "$sysroot"/ostree/.origin
 
 if [[ $target == /dev* ]]; then
     umount "$target"1

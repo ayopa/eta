@@ -45,7 +45,7 @@ mount /dev/loop1 "$sysroot"
 mkdir -p "$sysroot"/boot
 mount /dev/loop0 "$sysroot"/boot
 
-eta-install -n agora -o "$ostree_dir" "$sysroot"
+eta-install -n agora -o "$ostree_dir" -u "$ORIGIN_URL" "$sysroot"
 
 umount /mnt/boot
 umount /mnt
