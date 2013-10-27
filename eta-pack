@@ -36,7 +36,8 @@ losetup /dev/loop1 "$image_path" -o 500170752 --sizelimit 4499439104
 mkfs.ext4 /dev/loop0
 mkfs.ext4 /dev/loop1
 
-e2label /dev/loop1 $OSNAME
+e2label /dev/loop1 $OSNAME-root
+e2label /dev/loop0 $OSNAME-boot
 
 sysroot=/mnt
 

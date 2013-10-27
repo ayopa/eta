@@ -70,7 +70,7 @@ ostree admin --sysroot="$sysroot" os-init $osname
 ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
 
 ostree admin --sysroot="$sysroot" \
-    deploy master --karg="root=LABEL=$osname rw" --os=$osname
+    deploy master --karg="root=LABEL=$osname-root rw" --os=$osname
 
 extlinux -i "$sysroot"/boot
 
