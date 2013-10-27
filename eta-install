@@ -76,8 +76,11 @@ if [ ! -z "$origin_url" ]; then
         --set=gpg-verify=false
 fi
 
-ostree admin --sysroot="$sysroot" \
-    deploy master --karg="root=LABEL=$osname-root rw" --os=$osname
+echo -e "[origin]\nrefspec=origin:master" > "$sysroot"/ostree/origin
+
+ostree admin --sysroot="$sysroot" deploy master \
+    --karg="root=LABEL=$osname-root rw" --os=$osname \
+    --origin-file "$sysroot"/ostree/origin
 
 extlinux -i "$sysroot"/boot
 
