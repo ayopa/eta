@@ -24,6 +24,8 @@ variables
     * PKGS. A list of official Arch Linux packages.
     * ORIGIN_URL. The URL of OSTree repository.
 
+For an example, see the [Agora repository](https://github.com/ayopa/agora).
+
 # Build
 
 You need to run the commands inside the git repository. First build the custom
