@@ -72,7 +72,8 @@ ostree admin --sysroot="$sysroot" os-init $osname
 ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
 
 if [ ! -z "$origin_url" ]; then
-    ostree --repo="$sysroot"/ostree/repo remote add origin "$origin_url"
+    ostree --repo="$sysroot"/ostree/repo remote add origin "$origin_url" \
+        --set=gpg-verify=false
 fi
 
 ostree admin --sysroot="$sysroot" \
