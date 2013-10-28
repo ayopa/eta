@@ -83,5 +83,5 @@ EOF
 
 cp /usr/bin/eta-install "$os_dir"/usr/bin
 
-ostree --repo="$ostree_dir" commit --tree=dir="$os_dir" \
-    --branch=$OSNAME/master --subject "Update"
+ostree --repo="$ostree_dir" commit --tree=dir="$os_dir" --branch=master \
+    --subject "Update"
