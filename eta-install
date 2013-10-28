@@ -72,15 +72,19 @@ ostree admin --sysroot="$sysroot" os-init $osname
 ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
 
 if [ ! -z "$origin_url" ]; then
-    ostree --repo="$sysroot"/ostree/repo remote add origin "$origin_url" \
+    ostree --repo="$sysroot"/ostree/repo remote add $OSNAME "$origin_url" \
         --set=gpg-verify=false
 fi
 
-echo -e "[origin]\nrefspec=origin:master" > "$sysroot"/ostree/origin
+origin_file=$(mktemp)
+
+echo -e "[origin]\nrefspec=$OSNAME:$OSNAME/master" > "$origin_path"
 
 ostree admin --sysroot="$sysroot" deploy master \
     --karg="root=LABEL=$osname-root rw" --os=$osname \
-    --origin-file "$sysroot"/ostree/origin
+    --origin-file "$origin_path"
+
+rm -f "$origin_path"
 
 extlinux -i "$sysroot"/boot
 
