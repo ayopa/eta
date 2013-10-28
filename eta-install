@@ -76,15 +76,15 @@ if [ ! -z "$origin_url" ]; then
         --set=gpg-verify=false
 fi
 
-origin_file=$(mktemp)
+origin_tmp_file=$(mktemp)
 
-echo -e "[origin]\nrefspec=$osname:$osname/master" > "$origin_path"
+echo -e "[origin]\nrefspec=$osname:$osname/master" > "$origin_tmp_file"
 
 ostree admin --sysroot="$sysroot" deploy master \
     --karg="root=LABEL=$osname-root rw" --os=$osname \
-    --origin-file "$origin_path"
+    --origin-file "$origin_tmp_file"
 
-rm -f "$origin_path"
+rm -f "$origin_tmp_file"
 
 extlinux -i "$sysroot"/boot
 
