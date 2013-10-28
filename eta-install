@@ -69,7 +69,7 @@ ln -s ../loader/syslinux.cfg "$sysroot"/boot/syslinux/syslinux.cfg
 
 ostree admin --sysroot="$sysroot" os-init $osname
 
-ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" master
+ostree --repo="$sysroot"/ostree/repo pull-local "$ostree_dir" $osname/master
 
 if [ ! -z "$origin_url" ]; then
     ostree --repo="$sysroot"/ostree/repo remote add $osname "$origin_url" \
@@ -80,7 +80,7 @@ origin_tmp_file=$(mktemp)
 
 echo -e "[origin]\nrefspec=$osname:$osname/master" > "$origin_tmp_file"
 
-ostree admin --sysroot="$sysroot" deploy master \
+ostree admin --sysroot="$sysroot" deploy $osname/master \
     --karg="root=LABEL=$osname-root rw" --os=$osname \
     --origin-file "$origin_tmp_file"
 
